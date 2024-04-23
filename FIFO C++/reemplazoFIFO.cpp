@@ -16,6 +16,7 @@ int matriz[ 1000 ][ 1000 ];
 
 // Funciones
 void vaciarMatriz( int );
+void imprimirMatriz( int );
 void valoresManual( );
 void leerArchivo( );
 
@@ -60,6 +61,8 @@ int main()
         break;
     }
 
+    system( "pause" );
+
 	return 0;	
 }
 
@@ -73,6 +76,23 @@ void vaciarMatriz( int k )
         {
             matriz[ m ][ f ] = -1;
         }
+    }
+}
+
+void imprimirMatriz( int limite )
+{
+
+    cout << "Proce\tLlega\ttiempo\tPriori\tInicio\t Fin\tTiemTot\tEspera\tTiemPro" << endl;
+    for ( int i = 0; i < limite; i++ )
+    {
+        for ( int k = 0; k < 9; k++ )
+        {
+            if( matriz[ i ][ k ] < 10 ) cout << "  " << matriz[ i ][ k ] << "\t";
+            else if( matriz[ i ][ k ] < 100 && matriz[ i ][ k ] >= 10 ) cout << " " << matriz[ i ][ k ] << "\t";
+            else cout << matriz[ i ][ k ] << "\t";
+        }
+
+        cout << endl;
     }
 }
 
@@ -92,7 +112,7 @@ void valoresManual( )
     }
 }
 
-
+// Opcion 2: Leer valores de un archivo externo txt
 void leerArchivo( )
 {
     system( "cls" );
@@ -108,6 +128,9 @@ void leerArchivo( )
     cout << " (Llegada) (Tiempo en procesador) (Prioridad) " << endl;
     cout << " 0 2 3" << endl << " 1 4 2" << endl << " 2 2 1" << endl;
 
+    cout << endl << endl << " Continuar... " << endl;
+    system( "pause" );
+
     string nombreArchivo = "archivo.txt";
     ifstream archivo( nombreArchivo.c_str( ) );
 
@@ -115,7 +138,7 @@ void leerArchivo( )
     int tamanioMatriz = 0;
     bool espacio1 = true , espacio2 = true;
 
-    for ( int k = 0; getline( archivo , linea ); k++ )
+    for ( int k = -1; getline( archivo , linea ); k++ )
     {
 
         if( linea == "" )
@@ -124,32 +147,38 @@ void leerArchivo( )
             continue;
         }
 
-        if( k == 0 ) tamanioMatriz = stoi( linea );
+        if( k == -1 ) tamanioMatriz = stoi( linea );
         else
         {
-            llegada = ""; tiempo = ""; prioridad = "";
-            espacio1 = true; espacio2 = true;
-
-            for (int m = 0; m < linea.length( ); m++)
+            for (int i = 0; i < 9; i++)
             {
-                if ( espacio1 && espacio2 ) llegada += linea[ m ];
-                else if ( espacio2 ) tiempo += linea[ m ];
-                else y += linea[ m ];
-                
-                if ( linea[ m ] == ' ' && espacio1 ) espacio1 = false;
-                else if ( linea[ m ] == ' ' && espacio2 ) espacio2 = false;
+                llegada = ""; tiempo = ""; prioridad = "";
+                espacio1 = true; espacio2 = true;
+
+                for (int m = 0; m < linea.length( ); m++)
+                {
+                    if ( espacio1 && espacio2 ) llegada += linea[ m ];
+                    else if ( espacio2 ) tiempo += linea[ m ];
+                    else prioridad += linea[ m ];
+                    
+                    if ( linea[ m ] == ' ' && espacio1 ) espacio1 = false;
+                    else if ( linea[ m ] == ' ' && espacio2 ) espacio2 = false;
+                }
+
+                switch ( i )
+                {
+                    case 0: matriz[ k ][ i ] = ( k + 1 );           break;
+                    case 1: matriz[ k ][ i ] = stoi( llegada );     break;
+                    case 2: matriz[ k ][ i ] = stoi( tiempo );      break;
+                    case 3: matriz[ k ][ i ] = stoi( prioridad );   break;
+                    default: matriz[ k ][ i ] = 0;                  break;
+                }
             }
-
-            // cout << " x: " << x << endl;
-            // cout << " y: " << y << endl;
-
-            matriz[ stoi( x ) ][ stoi( y ) ] = k;
         }
-
-        // cout << linea << endl;
-
     }
-    
-    
+
+    system( "cls" );
+    cout << "\t Reemplazo de página FIFO " << endl << endl;
+    imprimirMatriz( tamanioMatriz );
 
 }
