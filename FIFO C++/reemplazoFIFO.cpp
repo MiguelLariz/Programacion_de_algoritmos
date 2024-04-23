@@ -49,7 +49,9 @@ int main()
     
     switch ( opcion )
     {
-        case 1: break;
+        case 1:
+            valoresManual( );
+            break;
 
         case 2:
             leerArchivo( );
@@ -100,16 +102,51 @@ void imprimirMatriz( int limite )
 void valoresManual( )
 {
     int noProcesos = 0;
+
     // Pedir cantidad de procesos
 	cout << "Introduce la cantidad de procesos: "; cin >> noProcesos; 
 
     // Vaciado de los espacios que necesitamos
     vaciarMatriz( noProcesos );
 
+    int llegada = 0 , tiempo = 0 , prioridad = 0;
+
     for ( int k = 0; k < noProcesos; k++ )
     {
+        cout << " Proceso #" << ( k + 1 ) << endl;
+
+        for (int i = 0; i < 9; i++)
+        {
+            switch ( i )
+            {
+                case 0:
+                    matriz[ k ][ i ] = ( k + 1 );
+                    break;
+
+                case 1:
+                    cout << " Llegada: "; cin >> llegada;
+                    matriz[ k ][ i ] = llegada;
+                    break;
+
+                case 2:
+                    cout << " Tiempo: " ; cin >> tiempo;
+                    matriz[ k ][ i ] = tiempo;
+                    break;
+
+                case 3:
+                    cout << " Prioridad: "; cin >> prioridad;
+                    matriz[ k ][ i ] = prioridad;
+                    break;
+            
+                default:
+                    matriz[ k ][ i ] = 0;
+                    break;
+            }
+        }
         
     }
+
+    imprimirMatriz( noProcesos );
 }
 
 // Opcion 2: Leer valores de un archivo externo txt
