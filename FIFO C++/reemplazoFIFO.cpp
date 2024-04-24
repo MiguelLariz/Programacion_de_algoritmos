@@ -13,17 +13,22 @@ using namespace std;
 
 // Variables globales
 int matriz[ 1000 ][ 1000 ];
+int matrizClon[ 1000 ][ 1000 ];
+int noProcesos = 0;
+
 
 
 // Funciones para ingresar valores
 void vaciarMatriz( int );
 void imprimirMatriz( int );
+void clonarMatriz( int ); 
+void imprimirMatrizClon( int );
 void valoresManual( );
 void leerArchivo( );
 void aleatorios( );
 
 // Funcion FIFO
-void FIFO( );
+void fifo( );
 
 
 int main()
@@ -79,6 +84,8 @@ int main()
         default: break;
     }
 
+    fifo( );
+
     // Detener ejecucion
     system( "pause" );
 	return 0;	
@@ -126,10 +133,42 @@ void imprimirMatriz( int limite )
 }
 
 
+void imprimirMatrizClon( int limite )
+{
+    cout << "Matriz clon" << endl;
+    // Encabezados de la tabla
+    cout << "Proce\tLlega\ttiempo\tPriori\tInicio\t Fin\tTiemTot\tEspera\tTiemPro" << endl;
+
+    // Recorrer tabla la cantidad de procesos
+    for ( int i = 0; i < limite; i++ )
+    {
+
+        // Imprimir cada renglon de la tabla
+        for ( int k = 0; k < 9; k++ )
+        {
+
+            // Imprimir por temas de estetica
+            if( matrizClon[ i ][ k ] < 10 ) cout << "  " << matrizClon[ i ][ k ] << "\t";
+            else if( matrizClon[ i ][ k ] < 100 && matrizClon[ i ][ k ] >= 10 ) cout << " " << matrizClon[ i ][ k ] << "\t";
+            else cout << matrizClon[ i ][ k ] << "\t";
+        }
+        // Separar cada renglon
+        cout << endl;
+    }
+}
+
+// Clonar matriz para no perder los datos originales
+void clonarMatriz( int limite )
+{
+    for ( int i = 0; i < limite; i++ )
+    {
+        for ( int k = 0; k < 9; k++ ) matrizClon[ i ][ k ] = matriz[ i ][ k ];
+    }
+}
+
 // Opcion 1. Introducir los valores manualmente
 void valoresManual( )
 {
-    int noProcesos = 0;
 
     // Pedir cantidad de procesos
 	cout << "Introduce la cantidad de procesos: "; cin >> noProcesos; 
@@ -214,7 +253,6 @@ void leerArchivo( )
     ifstream archivo( nombreArchivo.c_str( ) );
 
     string linea = "" , llegada = "" , tiempo = "" , prioridad = "";
-    int noProcesos = 0;
     bool espacio1 = true , espacio2 = true;
 
     for ( int k = -1; getline( archivo , linea ); k++ )
@@ -273,8 +311,6 @@ void aleatorios( )
     // Necesario para numeros aleatorios
     srand(time(NULL));
 
-    // Cantidad de procesos que se tendran
-    int noProcesos = 0;
     do
     {
         cout << " Cantitdad de procesos: "; cin >> noProcesos;
@@ -386,4 +422,53 @@ void aleatorios( )
 }
 
 
+// Funcion FIFO
+void fifo( )
+{
+
+    // limpiar consola
+    system( "cls" );
+    // Titulo del programa
+    cout << " Reemplazo de paginas FIFO " << endl;
+
+    // Explicacion de como se selecciona
+    cout << " Metodo de seleccion: Llegada -> Prioridad -> Mas corto " << endl;
+
+    // Vector para indicar cual sigue
+    int posiciones[ noProcesos ];
+
+    // Vaciado del vector
+    for ( int i = 0; i < noProcesos; i++ ) posiciones[ i ] = 0;
+
+    clonarMatriz( noProcesos );
+
+    int sigProceso = 0 , sigLlegada = 1000 , sigTiempo = 0 , sigPrioridad = 0;
+
+    for ( int k = 0; k < noProcesos; k++)
+    {
+        sigLlegada = 1000;
+        for ( int m = 0; m < noProcesos; m++ )
+        {
+            if ( matrizClon[ m ][ 1 ] < sigLlegada )
+            {
+                sigProceso = m;
+                sigLlegada = matrizClon[ m ][ 1 ];
+            }
+        }
+
+        matrizClon[ sigProceso ][ 1 ] = 10000;
+        posiciones[ k ] = sigProceso;
+    }
+
+    // Imprimir orden de procesos
+    for ( int k = 0; k < noProcesos; k++ )
+    {
+        cout << posiciones[ k ] << " ";
+    }
+
+    
+    
+
+
+}
 
