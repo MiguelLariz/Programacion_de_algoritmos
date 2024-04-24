@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <windows.h>
 using namespace std;
 
 
@@ -23,12 +24,15 @@ void imprimirMatriz( int );
 void clonarMatriz( int ); 
 void imprimirMatrizClon( int );
 void calculosTabla( );
+
+// Lectura de valores
 void valoresManual( );
 void leerArchivo( );
 void aleatorios( );
 
 // Funcion FIFO
 void fifo( );
+void mostrarResultados( );
 
 
 int main()
@@ -535,5 +539,56 @@ void fifo( )
 
     calculosTabla( );
 
+    mostrarResultados( );
+
 }
 
+
+// Se muestran los resultados visualmente como en excel
+void mostrarResultados( )
+{
+
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+
+    int inicio = 0 , fin = 0;
+    bool espera = false;
+
+    for ( int i = 0; i < noProcesos; i++ )
+    {
+
+
+        // Espacios de separación, cuando un proceso ocupo
+        // el procesador y otro estuvo esperando
+        for ( int k = 0; k < matriz[ i ][ 4 ]; k++)
+        {
+            // La "o" hace referencia la tiempo de espera
+            if ( k >= matriz[ i ][ 1 ] )  SetConsoleTextAttribute( hConsole, 7 ) , cout << "o";
+            else cout << " ";
+            
+        }
+
+        
+        // tiempo en procesador
+        for ( int m = matriz[ i ][ 4 ]; m < matriz[ i ][ 5 ]; m++ )
+        {
+
+            // Los colores se cuentan desde el 1
+            if ( i != 6 ) SetConsoleTextAttribute( hConsole , ( i + 1 ) ); 
+            
+            // El color numero 7 es blanco y no se toma en cuenta
+            else if ( i >= 6 && i <= 11 ) SetConsoleTextAttribute( hConsole , ( i + 3 ) );
+
+            // Se reinician los colores
+            else SetConsoleTextAttribute( hConsole, i - 11 );
+
+            // la "x" hace referencia a cuando el proceso dentro
+            // en el procesador
+            cout << "x";
+        }
+
+    // Regresar todo al color blanco
+    SetConsoleTextAttribute( hConsole, 7 );
+        cout << endl;
+    }
+}
