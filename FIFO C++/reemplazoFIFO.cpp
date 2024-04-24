@@ -17,12 +17,12 @@ int matrizClon[ 1000 ][ 1000 ];
 int noProcesos = 0;
 
 
-
 // Funciones para ingresar valores
 void vaciarMatriz( int );
 void imprimirMatriz( int );
 void clonarMatriz( int ); 
 void imprimirMatrizClon( int );
+void calculosTabla( );
 void valoresManual( );
 void leerArchivo( );
 void aleatorios( );
@@ -87,6 +87,7 @@ int main()
     fifo( );
 
     // Detener ejecucion
+    cout << endl << endl;
     system( "pause" );
 	return 0;	
 }
@@ -109,6 +110,9 @@ void vaciarMatriz( int k )
 // Funcion que permite imprimir la matriz que se esta utilizando
 void imprimirMatriz( int limite )
 {
+
+    // Separador
+    cout << endl << endl;
 
     // Encabezados de la tabla
     cout << "Proce\tLlega\ttiempo\tPriori\tInicio\t Fin\tTiemTot\tEspera\tTiemPro" << endl;
@@ -133,6 +137,17 @@ void imprimirMatriz( int limite )
 }
 
 
+// Clonar matriz para no perder los datos originales
+void clonarMatriz( int limite )
+{
+    for ( int i = 0; i < limite; i++ )
+    {
+        for ( int k = 0; k < 9; k++ ) matrizClon[ i ][ k ] = matriz[ i ][ k ];
+    }
+}
+
+
+// Imprimir los valores de la matriz clon 
 void imprimirMatrizClon( int limite )
 {
     cout << "Matriz clon" << endl;
@@ -157,14 +172,36 @@ void imprimirMatrizClon( int limite )
     }
 }
 
-// Clonar matriz para no perder los datos originales
-void clonarMatriz( int limite )
+
+// Llenar los campos que faltan de la tabla
+void calculosTabla( )
 {
-    for ( int i = 0; i < limite; i++ )
+    // Variables para llenar la tabla
+    int inicio = matriz[ 0 ][ 1 ] , fin = matriz[ 0 ][ 2 ];
+
+    for ( int k = 0; k < noProcesos; k++ )
     {
-        for ( int k = 0; k < 9; k++ ) matrizClon[ i ][ k ] = matriz[ i ][ k ];
+        // Calcular el inicio
+        matriz[ k ][ 4 ] = inicio;
+        if ( ( k + 1 ) < noProcesos ) inicio += matriz[ k ][ 2 ];
+
+        // Calcular el fin
+        matriz[ k ][ 5 ] = fin;
+        if ( (k + 1) < noProcesos ) fin += matriz[ ( k + 1 ) ][ 2 ];
+
+        // Calcular tiempo en procesador
+        matriz[ k ][ 6 ] = matriz[ k ][ 5 ] - matriz[ k ][ 1 ];
+
+        // Calcular tiempo de espera
+        matriz[ k ][ 7 ] = matriz[ k ][ 6 ] - matriz[ k ][ 2 ];
+
+        // Calcular tiempo promedio
+        matriz[ k ][ 8 ] = matriz[ k ][ 6 ] / matriz[ k ][ 2 ];
     }
+
+    imprimirMatriz( noProcesos );
 }
+
 
 // Opcion 1. Introducir los valores manualmente
 void valoresManual( )
@@ -453,6 +490,28 @@ void fifo( )
             {
                 sigProceso = m;
                 sigLlegada = matrizClon[ m ][ 1 ];
+                sigTiempo = matrizClon[ m ][ 2 ];
+                sigPrioridad = matrizClon[ m ][ 3 ];
+            }
+            else if( matrizClon[ m ][ 1 ] == sigLlegada )
+            {
+                if ( matrizClon[ m ][ 3 ] < sigPrioridad )
+                {
+                    sigProceso = m;
+                    sigLlegada = matrizClon[ m ][ 1 ];
+                    sigTiempo = matrizClon[ m ][ 2 ];
+                    sigPrioridad = matrizClon[ m ][ 3 ];
+                }
+                else if( matrizClon[ m ][ 3 ] == sigPrioridad )
+                {
+                    if ( matrizClon[ m ][ 2 ] < sigTiempo )
+                    {
+                        sigProceso = m;
+                        sigLlegada = matrizClon[ m ][ 1 ];
+                        sigTiempo = matrizClon[ m ][ 2 ];
+                        sigPrioridad = matrizClon[ m ][ 3 ];
+                    }
+                }
             }
         }
 
@@ -461,14 +520,20 @@ void fifo( )
     }
 
     // Imprimir orden de procesos
-    for ( int k = 0; k < noProcesos; k++ )
+    // for ( int x = 0; x < noProcesos; x++ ) cout << ( posiciones[ x ] + 1 ) << " ";
+
+
+    // Volver a los valores originales
+    clonarMatriz( noProcesos );
+
+
+    // Acomodar procesos
+    for ( int i = 0; i < noProcesos; i++ )
     {
-        cout << posiciones[ k ] << " ";
+        for ( int k = 0; k < 9; k++ ) matriz[ i ][ k ] = matrizClon[ posiciones[ i ] ][ k ];
     }
 
-    
-    
-
+    calculosTabla( );
 
 }
 
