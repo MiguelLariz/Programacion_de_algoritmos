@@ -15,12 +15,15 @@ using namespace std;
 int matriz[ 1000 ][ 1000 ];
 
 
-// Funciones
+// Funciones para ingresar valores
 void vaciarMatriz( int );
 void imprimirMatriz( int );
 void valoresManual( );
 void leerArchivo( );
 void aleatorios( );
+
+// Funcion FIFO
+void FIFO( );
 
 
 int main()
