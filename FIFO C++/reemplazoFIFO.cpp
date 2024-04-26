@@ -658,14 +658,14 @@ void EnseguidaMasCorto( )
 
     int indice = 0 , marcar = 0 , vueltas = 0 , hecho = 0;
 
-    for ( int i = 0; i <= mayorLlegada; i++ )
+    for ( int i = 0; i <= 1000; i++ )
     {
         vueltas = 0;
         // Ponerlos en espera para saber cual va a pasar
         for ( int k = 0; k < noProcesos; k++ )
         {
 
-            if ( matriz[ k ][ 1 ] == i )
+            if ( matriz[ k ][ 1 ] <= i )
             {
                 posicionProcesos[ indice ] = matriz[ k ][ 0 ];
                 llegadaProcesos[ indice ] = matriz[ k ][ 1 ];
@@ -715,12 +715,14 @@ void EnseguidaMasCorto( )
                 }
             }
 
-            cout << "Valores minimos " << endl;
-            cout << "Llegada" << llegadaMenor << endl;
-            cout << "Tiempo" << tiempoMenor << endl;
-            cout << "Prioridad" << prioridadMenor << endl;
-            cout << endl << endl;
-            system( "pause" );
+            // cout << "Valores minimos " << endl;
+            // cout << "Llegada" << llegadaMenor << endl;
+            // cout << "Tiempo" << tiempoMenor << endl;
+            // cout << "Prioridad" << prioridadMenor << endl;
+            // cout << endl << endl;
+            // system( "pause" );
+
+            i += tiempoMenor;
 
             posiciones[ hecho ] = posicionMenor;
             hecho++;
@@ -751,15 +753,19 @@ void EnseguidaMasCorto( )
     {
         for ( int m = 0; m < 9; m++ )
         {
-            matriz[ k ][ m ] = matrizClon[ posiciones[ k ] ][ m ];
+            matriz[ k ][ m ] = matrizClon[ posiciones[ k ] - 1 ][ m ];
         }
         
     }
 
     // Mostrar la tabla original sin llenar
-    imprimirMatriz( noProcesos );
+    //imprimirMatriz( noProcesos );
+
     
-    calculosTabla( );
+    
+    // calculosTabla( );
+    imprimirMatriz( noProcesos );
+    system( "pause" );
     mostrarResultadosSPN( posiciones );
 }
 
