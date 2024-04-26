@@ -30,27 +30,42 @@ void valoresManual( );
 void leerArchivo( );
 void aleatorios( );
 
-// Funcion FIFO
+// Metodo FIFO
 void fifo( );
-void mostrarResultados( );
+void mostrarResultadosFIFO( );
+
+// Metodo EnseguidaMasCorto
+void EnseguidaMasCorto( );
+void mostrarResultadosSPN( int [] );
 
 
 int main()
 {
 	system("cls"); // Limpiar consola
-	system("title Reemplazo FIFO"); // Cambiar titulo ventana
+	system("title Programacion de Algoritmos - FIFO y EnseguidaMasCorto"); // Cambiar titulo ventana
 	setlocale(LC_ALL, ""); // Aceptar acentos
 
     // Variables
-    int opcion = 0;
+    int opcion = 0 , metodo = 0;
 
     do
     {
         // Limpiar consola cada que se entra
         system( "cls" );
 
-        // Titulo
-        cout << "\n Reemplazo FIFO " << endl;
+        // Seleccionar metodo
+        do
+        {
+            cout << "\t Metodos disponibles " << endl;
+
+            cout << endl;
+            cout << " 1. FIFO " << endl;
+            cout << " 2. Enseguida el mas corto " << endl;
+
+            cout << "¿Que metodo se va a usar?"; cin >> metodo;
+
+        } while ( metodo != 1 && metodo != 2 );
+
 
         cout << " Menu " << endl;
 
@@ -88,7 +103,13 @@ int main()
         default: break;
     }
 
-    fifo( );
+    switch ( metodo )
+    {
+        case 1: fifo( ); break;
+        case 2: EnseguidaMasCorto( ); break;;
+        default:break;
+    }
+    
 
     // Detener ejecucion
     cout << endl << endl;
@@ -539,24 +560,22 @@ void fifo( )
 
     calculosTabla( );
 
-    mostrarResultados( );
+    mostrarResultadosFIFO( );
 
 }
 
 
 // Se muestran los resultados visualmente como en excel
-void mostrarResultados( )
+void mostrarResultadosFIFO( )
 {
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
 
     int inicio = 0 , fin = 0;
     bool espera = false;
 
     for ( int i = 0; i < noProcesos; i++ )
     {
-
 
         // Espacios de separación, cuando un proceso ocupo
         // el procesador y otro estuvo esperando
@@ -571,6 +590,206 @@ void mostrarResultados( )
         
         // tiempo en procesador
         for ( int m = matriz[ i ][ 4 ]; m < matriz[ i ][ 5 ]; m++ )
+        {
+
+            // Los colores se cuentan desde el 1
+            if ( i != 6 ) SetConsoleTextAttribute( hConsole , ( i + 1 ) ); 
+            
+            // El color numero 7 es blanco y no se toma en cuenta
+            else if ( i >= 6 && i <= 11 ) SetConsoleTextAttribute( hConsole , ( i + 3 ) );
+
+            // Se reinician los colores
+            else SetConsoleTextAttribute( hConsole, i - 11 );
+
+            // la "x" hace referencia a cuando el proceso dentro
+            // en el procesador
+            cout << "x";
+        }
+
+    // Regresar todo al color blanco
+    SetConsoleTextAttribute( hConsole, 7 );
+        cout << endl;
+    }
+}
+
+
+// Metodo de Enseguida el Mas Corto
+void EnseguidaMasCorto( )
+{
+    // limpiar consola
+    system( "cls" );
+    // Titulo del programa
+    cout << " Enseguida el Mas Corto " << endl;
+
+    // Explicacion de como se selecciona
+    cout << " Metodo de seleccion: Mas corto -> Prioridad -> Llegada" << endl;
+
+    // Guarfar los valores de la matriz original en una matriz bandera
+    clonarMatriz( noProcesos );
+
+    // Vector para guardar y comparar los procesos que ya hayan llegado
+    int posiciones[ noProcesos ];
+
+    int posicionProcesos[ noProcesos ];
+    int llegadaProcesos[ noProcesos ];
+    int tiempoProcesos[ noProcesos ];
+    int prioridadProcesos[ noProcesos ];
+
+    int posicionMenor = 0 , llegadaMenor = 0 , tiempoMenor = 1000 , prioridadMenor = 0;
+
+    // Vaciar los vectores para que no guarden valores basura
+    for ( int k = 0; k < noProcesos; k++ )
+    {
+        posiciones[ k ] = -1;
+
+        posicionProcesos[ k ] = -1;
+        llegadaProcesos[ k ] = -1;
+        tiempoProcesos[ k ] = -1;
+        prioridadProcesos[ k ] = -1;
+    }
+
+    int mayorLlegada = 0;
+
+    for ( int k = 0; k < noProcesos; k++ )
+    {
+        if ( matriz[ k ][ 1 ] > mayorLlegada ) mayorLlegada = matriz[ k ][ 1 ];
+    }
+    
+
+    int indice = 0 , marcar = 0 , vueltas = 0 , hecho = 0;
+
+    for ( int i = 0; i <= mayorLlegada; i++ )
+    {
+        vueltas = 0;
+        // Ponerlos en espera para saber cual va a pasar
+        for ( int k = 0; k < noProcesos; k++ )
+        {
+
+            if ( matriz[ k ][ 1 ] == i )
+            {
+                posicionProcesos[ indice ] = matriz[ k ][ 0 ];
+                llegadaProcesos[ indice ] = matriz[ k ][ 1 ];
+                tiempoProcesos[ indice ] = matriz[ k ][ 2 ];
+                prioridadProcesos[ indice ] = matriz[ k ][ 3 ];
+                indice++;
+                vueltas++;
+            }
+        }
+        
+        for ( int e = 0; e < vueltas; e++)
+        {
+            tiempoMenor = 1000;
+            marcar = 0;
+            // Buscar el de menor tiempo que este formado
+            for ( int m = 0; m < indice; m++ )
+            {
+                if ( tiempoProcesos[ m ] < tiempoMenor )
+                {
+                    posicionMenor = posicionProcesos[ m ];
+                    llegadaMenor = llegadaProcesos[ m ];
+                    tiempoMenor = tiempoProcesos[ m ];
+                    prioridadMenor = prioridadProcesos[ m ];
+                    marcar = m;
+                }
+                else if ( tiempoProcesos[ m ] == tiempoMenor )
+                {
+                    if ( prioridadProcesos[ m ] < prioridadMenor )
+                    {
+                        posicionMenor = posicionProcesos[ m ];
+                        llegadaMenor = llegadaProcesos[ m ];
+                        tiempoMenor = tiempoProcesos[ m ];
+                        prioridadMenor = prioridadProcesos[ m ];
+                        marcar = m;
+                    }
+                    else if ( prioridadProcesos[ m ] == prioridadMenor )
+                    {
+                        if ( llegadaProcesos[ m ] < llegadaMenor )
+                        {
+                            posicionMenor = posicionProcesos[ m ];
+                            llegadaMenor = llegadaProcesos[ m ];
+                            tiempoMenor = tiempoProcesos[ m ];
+                            prioridadMenor = prioridadProcesos[ m ];
+                            marcar = m;
+                        }
+                    }
+                }
+            }
+
+            cout << "Valores minimos " << endl;
+            cout << "Llegada" << llegadaMenor << endl;
+            cout << "Tiempo" << tiempoMenor << endl;
+            cout << "Prioridad" << prioridadMenor << endl;
+            cout << endl << endl;
+            system( "pause" );
+
+            posiciones[ hecho ] = posicionMenor;
+            hecho++;
+            llegadaProcesos[ marcar ] = 100000;
+            tiempoProcesos[ marcar ] = 100000;
+            prioridadProcesos[ marcar ] = 100000;
+        }
+    }
+    
+        cout << "Posiciones " << endl;
+        // Imprimir orden de procesos
+        for ( int x = 0; x < noProcesos; x++ )
+        {
+            if ( posiciones[ x] != -1 )
+            {
+                cout << posiciones[ x ];
+                cout << endl;
+            }
+        }
+        cout << endl << endl;
+        system( "pause" );
+
+    // Volver a los valores originales porque se había cambiado
+    // la menor llegada por 1000
+    clonarMatriz( noProcesos );
+
+    for ( int k = 0; k < noProcesos; k++ )
+    {
+        for ( int m = 0; m < 9; m++ )
+        {
+            matriz[ k ][ m ] = matrizClon[ posiciones[ k ] ][ m ];
+        }
+        
+    }
+
+    // Mostrar la tabla original sin llenar
+    imprimirMatriz( noProcesos );
+    
+    calculosTabla( );
+    mostrarResultadosSPN( posiciones );
+}
+
+
+void mostrarResultadosSPN( int posiciones[] )
+{
+
+    cout << "mostrarResultadosSPN" << endl;
+
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    int inicio = 0 , fin = 0;
+    bool espera = false;
+
+    for ( int i = 0; i < noProcesos; i++ )
+    {
+
+        // Espacios de separación, cuando un proceso ocupo
+        // el procesador y otro estuvo esperando
+        for ( int k = 0; k < matriz[ posiciones[ i ] ][ 4 ]; k++)
+        {
+            // La "o" hace referencia la tiempo de espera
+            if ( k >= matriz[ posiciones[ i ] ][ 1 ] )  SetConsoleTextAttribute( hConsole, 7 ) , cout << "o";
+            else cout << " ";
+            
+        }
+
+        
+        // tiempo en procesador
+        for ( int m = matriz[ posiciones[ i ] ][ 4 ]; m < matriz[ posiciones[ i ] ][ 5 ]; m++ )
         {
 
             // Los colores se cuentan desde el 1
