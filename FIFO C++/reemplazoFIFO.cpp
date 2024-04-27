@@ -223,8 +223,6 @@ void calculosTabla( )
         // Calcular tiempo promedio
         matriz[ k ][ 8 ] = matriz[ k ][ 6 ] / matriz[ k ][ 2 ];
     }
-
-    imprimirMatriz( noProcesos );
 }
 
 
@@ -558,8 +556,13 @@ void fifo( )
         for ( int k = 0; k < 9; k++ ) matriz[ i ][ k ] = matrizClon[ posiciones[ i ] ][ k ];
     }
 
+    // Llenar valores que faltan de la tabla
     calculosTabla( );
 
+    // Mostrar la tabla final
+    imprimirMatriz( noProcesos );
+
+    // Mostrar los valos visualmente (graficados)
     mostrarResultadosFIFO( );
 
 }
@@ -618,6 +621,7 @@ void mostrarResultadosFIFO( )
 // Metodo de Enseguida el Mas Corto
 void EnseguidaMasCorto( )
 {
+
     // limpiar consola
     system( "cls" );
     // Titulo del programa
@@ -632,40 +636,46 @@ void EnseguidaMasCorto( )
     // Vector para guardar y comparar los procesos que ya hayan llegado
     int posiciones[ noProcesos ];
 
+    // Vector que guardara los valores de los procesos que este en espera
     int posicionProcesos[ noProcesos ];
     int llegadaProcesos[ noProcesos ];
     int tiempoProcesos[ noProcesos ];
     int prioridadProcesos[ noProcesos ];
 
+    // Variables para guardar los valores del proceso que sigue
     int posicionMenor = 0 , llegadaMenor = 0 , tiempoMenor = 1000 , prioridadMenor = 0;
 
     // Vaciar los vectores para que no guarden valores basura
     for ( int k = 0; k < noProcesos; k++ )
     {
         posiciones[ k ] = -1;
-
         posicionProcesos[ k ] = -1;
         llegadaProcesos[ k ] = -1;
         tiempoProcesos[ k ] = -1;
         prioridadProcesos[ k ] = -1;
     }
 
+    // Variable para el tiempo total que se ocupara el procesador
     int totalTiempo = 0;
 
+    // Hacer la suma de todos los tiempos que se toman los procesos
     for ( int k = 0; k < noProcesos; k++ ) totalTiempo += matriz[ k ][ 2 ]; 
 
+    // Variables para guardar posiciones y cantidad de vueltas para los ciclos
     int indice = 0 , marcar = 0 , vueltas = 0 , hecho = 0;
-    bool entro = false;
 
     for ( int i = 0; i <= totalTiempo; i++ )
-    { 
-        // system( "cls" );
-        
+    {
+
+        // Reinicio de variables que se ocupan
         vueltas = 0;
-        // Ponerlos en espera para saber cual va a pasar
+        indice = 0;
+
+        // Recorrer todos los procesos
         for ( int k = 0; k < noProcesos; k++ )
         {
 
+            // Ponerlos en espera para saber cual va a pasar
             if ( matrizClon[ k ][ 1 ] <= i )
             {
                 posicionProcesos[ indice ] = matrizClon[ k ][ 0 ];
@@ -674,41 +684,23 @@ void EnseguidaMasCorto( )
                 prioridadProcesos[ indice ] = matrizClon[ k ][ 3 ];
                 indice++;
                 vueltas++;
-                matrizClon[ k ][ 1 ] = 10000;
             }
         }
 
-        // cout << "Tiempo ejecutado: " << i << endl;
+        // Encontrar el menor tiempo de los procesos en espera
+        tiempoMenor = 100;
+        marcar = 0;
 
-        // cout << "Posiciones Procesos: "; 
-        // for ( int i = 0; i < indice; i++ ) cout << posicionProcesos[ i ] << " ";
-        // cout << endl;
-
-        // cout << "Llegada Procesos: "; 
-        // for ( int i = 0; i < indice; i++ ) cout << llegadaProcesos[ i ] << " ";
-        // cout << endl;
-
-        // cout << "Tiempo Procesos: "; 
-        // for ( int i = 0; i < indice; i++ ) cout << tiempoProcesos[ i ] << " ";
-        // cout << endl;
-        
-        // cout << "Prioridad Procesos: "; 
-        // for ( int i = 0; i < indice; i++ ) cout << prioridadProcesos[ i ] << " ";
-        // cout << endl;
-
-        // cout << "Vueltas: " << vueltas << endl;
-
-        // system( "pause" );
-
-        
-        for ( int e = 0; e < vueltas; e++)
+        // El ciclo gira la cantidad de procesos que esta en espera
+        // para encontrar al mas pequeño de los formados
+        for ( int e = 0; e < vueltas; e++ )
         {
-            tiempoMenor = 100;
-            marcar = 0;
-            entro = false;
+
             // Buscar el de menor tiempo que este formado
             for ( int m = 0; m < indice; m++ )
             {
+                // Comparar el menor tiempo guardado con el del
+                // proceso anterior
                 if ( tiempoProcesos[ m ] < tiempoMenor )
                 {
                     posicionMenor = posicionProcesos[ m ];
@@ -716,10 +708,14 @@ void EnseguidaMasCorto( )
                     tiempoMenor = tiempoProcesos[ m ];
                     prioridadMenor = prioridadProcesos[ m ];
                     marcar = m;
-                    entro = true;
                 }
+
+                // Si son iguales los tiempos comparar la menor 
+                // prioridad de ambos proceso
                 else if ( tiempoProcesos[ m ] == tiempoMenor )
                 {
+
+                    // Comparar la menor prioridad de ambos procesos
                     if ( prioridadProcesos[ m ] < prioridadMenor )
                     {
                         posicionMenor = posicionProcesos[ m ];
@@ -727,10 +723,14 @@ void EnseguidaMasCorto( )
                         tiempoMenor = tiempoProcesos[ m ];
                         prioridadMenor = prioridadProcesos[ m ];
                         marcar = m;
-                        entro = true;
                     }
+
+                    // Si son iguales las prioridades se compara con el
+                    // que haya llegado antes
                     else if ( prioridadProcesos[ m ] == prioridadMenor )
                     {
+
+                        // Guardar el proceso que haya llegado antes
                         if ( llegadaProcesos[ m ] < llegadaMenor )
                         {
                             posicionMenor = posicionProcesos[ m ];
@@ -738,64 +738,46 @@ void EnseguidaMasCorto( )
                             tiempoMenor = tiempoProcesos[ m ];
                             prioridadMenor = prioridadProcesos[ m ];
                             marcar = m;
-                            entro = true;
+                        }
+
+                        // Si llegaron al mismo tiempo, tienen el mismo
+                        // tiempo y la misma prioridad, se guarda
+                        // cualquiera de los dos
+                        else
+                        {
+                            posicionMenor = posicionProcesos[ m ];
+                            llegadaMenor = llegadaProcesos[ m ];
+                            tiempoMenor = tiempoProcesos[ m ];
+                            prioridadMenor = prioridadProcesos[ m ];
+                            marcar = m;
                         }
                     }
                 }
             }
-            
-            if ( entro ) 
-            {
-                
-
-                // cout << "marcar: " << marcar << endl;
-                // cout << "hecho: " << hecho << endl;
-                // cout << "tiempoMenor: " << tiempoMenor << endl;
-
-                i += ( tiempoMenor - 1 );
-
-                posiciones[ hecho ] = posicionMenor;
-                hecho++;
-                matrizClon[ posicionMenor - 1 ][ 0 ] = 100000;
-                matrizClon[ posicionMenor - 1 ][ 1 ] = 100000;
-                matrizClon[ posicionMenor - 1 ][ 2 ] = 100000;
-                matrizClon[ posicionMenor - 1 ][ 3 ] = 100000;
-
-                posicionProcesos[ marcar ] = 10000;
-                llegadaProcesos[ marcar ] = 10000;
-                tiempoProcesos[ marcar ] = 10000;
-                prioridadProcesos[ marcar ] = 10000;
-
-                // cout << "Posiciones: ";
-                // // Imprimir orden de procesos
-                // for ( int x = 0; x < noProcesos; x++ )
-                // {
-                //     if ( posiciones[ x] != -1 )
-                //     {
-                //         cout << posiciones[ x ] << " " << endl;
-                //     }
-                // }
-                // cout << endl << endl;
-                // system( "pause" );
-
-            }
-            
-
         }
+
+        // Se suma el tiempo del menor proceso para despues validar 
+        // los procesos que hayan llegado en ese momento o antes
+        i += ( tiempoMenor - 1 );
+
+        // Guardar el proceso con menor tiempo
+        posiciones[ hecho ] = posicionMenor;
+        hecho++;
+
+        // Cambiar los valores por valores grandes para que ya no
+        // sean tomados en cuenta y siga con los siguientes procesos
+        matrizClon[ posicionMenor - 1 ][ 0 ] = 100000;
+        matrizClon[ posicionMenor - 1 ][ 1 ] = 100000;
+        matrizClon[ posicionMenor - 1 ][ 2 ] = 100000;
+        matrizClon[ posicionMenor - 1 ][ 3 ] = 100000;
+
     }
-    
-        cout << "Posiciones " << endl;
-        // Imprimir orden de procesos
-        for ( int x = 0; x < noProcesos; x++ )
-        {
-            if ( posiciones[ x] != -1 )
-            {
-                cout << posiciones[ x ];
-                cout << endl;
-            }
-        }
-        cout << endl << endl;
-        system( "pause" );
+
+    // Imprimir orden de procesos
+    // cout << "Posiciones " << endl;
+    // for ( int x = 0; x < noProcesos; x++ ) if ( posiciones[ x] != -1 ) cout << posiciones[ x ] << " ";
+    // cout << endl << endl;
+    // system( "pause" );
 
     // Volver a los valores originales porque se había cambiado
     // la menor llegada por 1000
@@ -803,20 +785,28 @@ void EnseguidaMasCorto( )
 
     for ( int k = 0; k < noProcesos; k++ )
     {
-        for ( int m = 0; m < 9; m++ )
-        {
-            matriz[ k ][ m ] = matrizClon[ posiciones[ k ] - 1 ][ m ];
-        }
-        
+        for ( int m = 0; m < 9; m++ ) matriz[ k ][ m ] = matrizClon[ posiciones[ k ] - 1 ][ m ];
     }
 
     // Mostrar la tabla original sin llenar
-    //imprimirMatriz( noProcesos );
+    // imprimirMatriz( noProcesos );
 
+    clonarMatriz( noProcesos );
+
+    // Llenar la tabla con los valores que le faltan
+    calculosTabla( );
+
+    int acomodo = 1000;
+    for ( int i = 0; i < noProcesos; k++ )
+    {
+        acomodo = 1000;
+        for ( int k = 0; k < noProcesos; k++ )
+        {
+        }
+        
+    }
     
-    
-    // calculosTabla( );
-    imprimirMatriz( noProcesos );
+
     system( "pause" );
     mostrarResultadosSPN( posiciones );
 }
