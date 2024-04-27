@@ -577,6 +577,8 @@ void mostrarResultadosFIFO( )
     for ( int i = 0; i < noProcesos; i++ )
     {
 
+        cout << i << "   ";
+
         // Espacios de separación, cuando un proceso ocupo
         // el procesador y otro estuvo esperando
         for ( int k = 0; k < matriz[ i ][ 4 ]; k++)
@@ -648,38 +650,62 @@ void EnseguidaMasCorto( )
         prioridadProcesos[ k ] = -1;
     }
 
-    int mayorLlegada = 0;
+    int totalTiempo = 0;
 
-    for ( int k = 0; k < noProcesos; k++ )
-    {
-        if ( matriz[ k ][ 1 ] > mayorLlegada ) mayorLlegada = matriz[ k ][ 1 ];
-    }
-    
+    for ( int k = 0; k < noProcesos; k++ ) totalTiempo += matriz[ k ][ 2 ]; 
 
     int indice = 0 , marcar = 0 , vueltas = 0 , hecho = 0;
+    bool entro = false;
 
-    for ( int i = 0; i <= 1000; i++ )
-    {
+    for ( int i = 0; i <= totalTiempo; i++ )
+    { 
+        // system( "cls" );
+        
         vueltas = 0;
         // Ponerlos en espera para saber cual va a pasar
         for ( int k = 0; k < noProcesos; k++ )
         {
 
-            if ( matriz[ k ][ 1 ] <= i )
+            if ( matrizClon[ k ][ 1 ] <= i )
             {
-                posicionProcesos[ indice ] = matriz[ k ][ 0 ];
-                llegadaProcesos[ indice ] = matriz[ k ][ 1 ];
-                tiempoProcesos[ indice ] = matriz[ k ][ 2 ];
-                prioridadProcesos[ indice ] = matriz[ k ][ 3 ];
+                posicionProcesos[ indice ] = matrizClon[ k ][ 0 ];
+                llegadaProcesos[ indice ] = matrizClon[ k ][ 1 ];
+                tiempoProcesos[ indice ] = matrizClon[ k ][ 2 ];
+                prioridadProcesos[ indice ] = matrizClon[ k ][ 3 ];
                 indice++;
                 vueltas++;
+                matrizClon[ k ][ 1 ] = 10000;
             }
         }
+
+        // cout << "Tiempo ejecutado: " << i << endl;
+
+        // cout << "Posiciones Procesos: "; 
+        // for ( int i = 0; i < indice; i++ ) cout << posicionProcesos[ i ] << " ";
+        // cout << endl;
+
+        // cout << "Llegada Procesos: "; 
+        // for ( int i = 0; i < indice; i++ ) cout << llegadaProcesos[ i ] << " ";
+        // cout << endl;
+
+        // cout << "Tiempo Procesos: "; 
+        // for ( int i = 0; i < indice; i++ ) cout << tiempoProcesos[ i ] << " ";
+        // cout << endl;
+        
+        // cout << "Prioridad Procesos: "; 
+        // for ( int i = 0; i < indice; i++ ) cout << prioridadProcesos[ i ] << " ";
+        // cout << endl;
+
+        // cout << "Vueltas: " << vueltas << endl;
+
+        // system( "pause" );
+
         
         for ( int e = 0; e < vueltas; e++)
         {
-            tiempoMenor = 1000;
+            tiempoMenor = 100;
             marcar = 0;
+            entro = false;
             // Buscar el de menor tiempo que este formado
             for ( int m = 0; m < indice; m++ )
             {
@@ -690,6 +716,7 @@ void EnseguidaMasCorto( )
                     tiempoMenor = tiempoProcesos[ m ];
                     prioridadMenor = prioridadProcesos[ m ];
                     marcar = m;
+                    entro = true;
                 }
                 else if ( tiempoProcesos[ m ] == tiempoMenor )
                 {
@@ -700,6 +727,7 @@ void EnseguidaMasCorto( )
                         tiempoMenor = tiempoProcesos[ m ];
                         prioridadMenor = prioridadProcesos[ m ];
                         marcar = m;
+                        entro = true;
                     }
                     else if ( prioridadProcesos[ m ] == prioridadMenor )
                     {
@@ -710,25 +738,49 @@ void EnseguidaMasCorto( )
                             tiempoMenor = tiempoProcesos[ m ];
                             prioridadMenor = prioridadProcesos[ m ];
                             marcar = m;
+                            entro = true;
                         }
                     }
                 }
             }
+            
+            if ( entro ) 
+            {
+                
 
-            // cout << "Valores minimos " << endl;
-            // cout << "Llegada" << llegadaMenor << endl;
-            // cout << "Tiempo" << tiempoMenor << endl;
-            // cout << "Prioridad" << prioridadMenor << endl;
-            // cout << endl << endl;
-            // system( "pause" );
+                // cout << "marcar: " << marcar << endl;
+                // cout << "hecho: " << hecho << endl;
+                // cout << "tiempoMenor: " << tiempoMenor << endl;
 
-            i += tiempoMenor;
+                i += ( tiempoMenor - 1 );
 
-            posiciones[ hecho ] = posicionMenor;
-            hecho++;
-            llegadaProcesos[ marcar ] = 100000;
-            tiempoProcesos[ marcar ] = 100000;
-            prioridadProcesos[ marcar ] = 100000;
+                posiciones[ hecho ] = posicionMenor;
+                hecho++;
+                matrizClon[ posicionMenor - 1 ][ 0 ] = 100000;
+                matrizClon[ posicionMenor - 1 ][ 1 ] = 100000;
+                matrizClon[ posicionMenor - 1 ][ 2 ] = 100000;
+                matrizClon[ posicionMenor - 1 ][ 3 ] = 100000;
+
+                posicionProcesos[ marcar ] = 10000;
+                llegadaProcesos[ marcar ] = 10000;
+                tiempoProcesos[ marcar ] = 10000;
+                prioridadProcesos[ marcar ] = 10000;
+
+                // cout << "Posiciones: ";
+                // // Imprimir orden de procesos
+                // for ( int x = 0; x < noProcesos; x++ )
+                // {
+                //     if ( posiciones[ x] != -1 )
+                //     {
+                //         cout << posiciones[ x ] << " " << endl;
+                //     }
+                // }
+                // cout << endl << endl;
+                // system( "pause" );
+
+            }
+            
+
         }
     }
     
