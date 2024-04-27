@@ -563,13 +563,13 @@ void fifo( )
     imprimirMatriz( noProcesos );
 
     // Mostrar los valos visualmente (graficados)
-    mostrarResultadosFIFO( );
+    mostrarResultados( );
 
 }
 
 
 // Se muestran los resultados visualmente como en excel
-void mostrarResultadosFIFO( )
+void mostrarResultados( )
 {
 
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -791,71 +791,36 @@ void EnseguidaMasCorto( )
     // Mostrar la tabla original sin llenar
     // imprimirMatriz( noProcesos );
 
-    clonarMatriz( noProcesos );
 
     // Llenar la tabla con los valores que le faltan
     calculosTabla( );
 
-    int acomodo = 1000;
-    for ( int i = 0; i < noProcesos; k++ )
-    {
-        acomodo = 1000;
-        for ( int k = 0; k < noProcesos; k++ )
-        {
-        }
-        
-    }
-    
+    // Clonar los valores de toda la tabla en la matrizClon
+    clonarMatriz( noProcesos );
 
-    system( "pause" );
-    mostrarResultadosSPN( posiciones );
-}
-
-
-void mostrarResultadosSPN( int posiciones[] )
-{
-
-    cout << "mostrarResultadosSPN" << endl;
-
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    int inicio = 0 , fin = 0;
-    bool espera = false;
-
+    int menor = 1000 , lugar = 0;
     for ( int i = 0; i < noProcesos; i++ )
     {
-
-        // Espacios de separación, cuando un proceso ocupo
-        // el procesador y otro estuvo esperando
-        for ( int k = 0; k < matriz[ posiciones[ i ] ][ 4 ]; k++)
+        menor = 1000;
+        for ( int k = 0; k < noProcesos; k++ )
         {
-            // La "o" hace referencia la tiempo de espera
-            if ( k >= matriz[ posiciones[ i ] ][ 1 ] )  SetConsoleTextAttribute( hConsole, 7 ) , cout << "o";
-            else cout << " ";
-            
+            if ( matrizClon[ k ][ 0 ] < menor )
+            {
+                menor = matrizClon[ k ][ 0 ];
+                lugar = k;
+            }
         }
 
-        
-        // tiempo en procesador
-        for ( int m = matriz[ posiciones[ i ] ][ 4 ]; m < matriz[ posiciones[ i ] ][ 5 ]; m++ )
-        {
+        for ( int m = 0; m < 9; m++ ) matriz[ i ][ m ] = matrizClon[ lugar ][ m ];
 
-            // Los colores se cuentan desde el 1
-            if ( i != 6 ) SetConsoleTextAttribute( hConsole , ( i + 1 ) ); 
-            
-            // El color numero 7 es blanco y no se toma en cuenta
-            else if ( i >= 6 && i <= 11 ) SetConsoleTextAttribute( hConsole , ( i + 3 ) );
-
-            // Se reinician los colores
-            else SetConsoleTextAttribute( hConsole, i - 11 );
-
-            // la "x" hace referencia a cuando el proceso dentro
-            // en el procesador
-            cout << "x";
-        }
-
-    // Regresar todo al color blanco
-    SetConsoleTextAttribute( hConsole, 7 );
-        cout << endl;
+        matrizClon[ lugar ][ 0 ] = 1000;
     }
+
+    // Mostrar la tabla final
+    imprimirMatriz( noProcesos );
+    
+    // Mostrar los resultados finales graficados
+    mostrarResultados( );
 }
+
+
