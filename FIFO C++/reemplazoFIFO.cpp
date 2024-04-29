@@ -32,11 +32,10 @@ void aleatorios( );
 
 // Metodo FIFO
 void fifo( );
-void mostrarResultadosFIFO( );
+void mostrarResultados( );
 
 // Metodo EnseguidaMasCorto
 void EnseguidaMasCorto( );
-void mostrarResultadosSPN( int [] );
 
 
 int main()
