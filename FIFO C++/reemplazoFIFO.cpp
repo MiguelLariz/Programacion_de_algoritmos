@@ -4,10 +4,12 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <locale.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <wchar.h>
 #include <windows.h>
 using namespace std;
 
@@ -40,45 +42,99 @@ void EnseguidaMasCorto( );
 
 int main()
 {
-	system("cls"); // Limpiar consola
-	system("title Programacion de Algoritmos - FIFO y EnseguidaMasCorto"); // Cambiar titulo ventana
-	setlocale(LC_ALL, ""); // Aceptar acentos
+	system( "cls" ); // Limpiar consola
+	system( "title Programacion de Algoritmos - FIFO y EnseguidaMasCorto" ); // Cambiar titulo ventana
+	setlocale(LC_CTYPE, "Spanish"); // Aceptar acentos
+
+    // Aceptar colores de texto
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    SetConsoleTextAttribute( hConsole , 3 );
+    cout << " Benemerita Universidad Autonoma de Aguscalientes " << endl;
+
+    SetConsoleTextAttribute( hConsole , 5 );
+    cout << " Materia:";
+    SetConsoleTextAttribute( hConsole , 7 );
+    cout << " Introduccion a los sistemas operativos " << endl;
+
+    SetConsoleTextAttribute( hConsole , 5 );
+    cout << " Docente:";
+    SetConsoleTextAttribute( hConsole , 7 );
+    cout << " Clelia Ivette Ruiz Vertiz " << endl;
+
+    SetConsoleTextAttribute( hConsole , 5 );
+    cout << " Actividad:";
+    SetConsoleTextAttribute( hConsole , 7 );
+    cout << " Programacion de algoritmos. " << endl;
+
+    SetConsoleTextAttribute( hConsole , 5 );
+    cout << " Opciones seleccionadas: " << endl;
+    SetConsoleTextAttribute( hConsole , 7 );
+    cout << " 1. Tabla de reemplazo de paginas FIFO. " << endl;
+    cout << " 2. Tabla de procesos por le trabajo más corto primero. " << endl;
+
+    SetConsoleTextAttribute( hConsole , 5 );
+    cout << " Alumnos: " << endl;
+    SetConsoleTextAttribute( hConsole , 7 );
+    cout << " * Miguel Angel Duron Lariz - 331992 \n * Kandy Fabiola Lopez Flores - 326912 " << endl;
+
+    SetConsoleTextAttribute( hConsole , 6 );
+    cout << " Viernes 03 de mayo del 2024. " << endl;
+
+    SetConsoleTextAttribute( hConsole , 7 );
+
+    cout << endl << endl;
+    system( "pause" );
 
     // Variables
     int opcion = 0 , metodo = 0;
 
+    // Seleccionar metodo
     do
     {
         // Limpiar consola cada que se entra
         system( "cls" );
 
-        // Seleccionar metodo
-        do
-        {
-            cout << "\t Metodos disponibles " << endl;
+        SetConsoleTextAttribute( hConsole , 10 );
+        cout << "\t Metodos disponibles " << endl << endl;
 
-            cout << endl;
-            cout << " 1. FIFO " << endl;
-            cout << " 2. Enseguida el mas corto " << endl;
+        SetConsoleTextAttribute( hConsole , 11 );
+        cout << " 1. FIFO " << endl;
 
-            cout << "¿Que metodo se va a usar?"; cin >> metodo;
+        SetConsoleTextAttribute( hConsole , 3 );
+        cout << " 2. Enseguida el mas corto " << endl;
 
-        } while ( metodo != 1 && metodo != 2 );
+        SetConsoleTextAttribute( hConsole , 7 );
+        cout << endl << " Que metodo se va a usar? "; cin >> metodo;
+
+    } while ( metodo != 1 && metodo != 2 );
 
 
+    do
+    {
+        // Limpiar la consola
+        system( "cls" );
+
+        // Titulo del menu
+        SetConsoleTextAttribute( hConsole , 10 );
         cout << " Menu " << endl;
 
         // Opciones dentro del algoritmo
+        SetConsoleTextAttribute( hConsole , 11 );
         cout << " 1. Llenar los valores manualmente. " << endl;
+
+        SetConsoleTextAttribute( hConsole , 12 );
         cout << " 2. Leerlos de un archivo txt." << endl;
+
+        SetConsoleTextAttribute( hConsole , 13 );
         cout << " 3. Valores aleatorios." << endl << endl;
 
+        SetConsoleTextAttribute( hConsole , 7 );
         // Lectura de la opcion seleccionada
         cout << " Opcion: "; cin >> opcion;
 
     // Validacion de la opcion
     } while ( opcion != 1 && opcion != 2 && opcion != 3 );
-    
 
     // Mandar a cada opcion
     switch ( opcion )
@@ -106,9 +162,8 @@ int main()
     {
         case 1: fifo( ); break;
         case 2: EnseguidaMasCorto( ); break;;
-        default:break;
+        default: break;
     }
-    
 
     // Detener ejecucion
     cout << endl << endl;
@@ -461,7 +516,10 @@ void aleatorios( )
                 case 1: matriz[ i ][ k ] = rand( ) % ( randomLlegada + 1 ); break;
 
                 // Generar tiempo
-                case 2: matriz[ i ][ k ] = 1 + rand( ) % ( maxTiempo + 1 ); break;
+                case 2:
+                    if ( i == 0 ) matriz[ i ][ k ] = 0;
+                    else matriz[ i ][ k ] = 1 + rand( ) % ( maxTiempo + 1 );
+                    break;
 
                 // Generar prioridad
                 case 3: matriz[ i ][ k ] = rand( ) % ( maxPrioridad + 1 ); break;
@@ -472,7 +530,6 @@ void aleatorios( )
 
         }
 
-        
         randomLlegada += matriz[ i ][ 2 ];
     }
 
@@ -599,7 +656,6 @@ void mostrarResultados( )
             
         }
 
-        
         // tiempo en procesador
         for ( int m = matriz[ i ][ 4 ]; m < matriz[ i ][ 5 ]; m++ )
         {
