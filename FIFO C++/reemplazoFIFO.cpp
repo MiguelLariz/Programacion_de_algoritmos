@@ -446,6 +446,8 @@ void aleatorios( )
     cout << " Tiempo: 1-" << maxTiempo << endl;
     cout << " Prioridad: 0-" << maxPrioridad << endl;
 
+    int randomLlegada = 0;
+
     for ( int i = 0; i < noProcesos; i++)
     {
         for ( int k = 0; k < 9; k++)
@@ -456,10 +458,10 @@ void aleatorios( )
                 case 0: matriz[ i ][ k ] = i; break;
 
                 // Generar llegada
-                case 1: matriz[ i ][ k ] = rand( ) % ( maxLlegada + 1 ); break;
+                case 1: matriz[ i ][ k ] = rand( ) % ( randomLlegada + 1 ); break;
 
                 // Generar tiempo
-                case 2: matriz[ i ][ k ] = rand( ) % ( maxTiempo + 1 ); break;
+                case 2: matriz[ i ][ k ] = 1 + rand( ) % ( maxTiempo + 1 ); break;
 
                 // Generar prioridad
                 case 3: matriz[ i ][ k ] = rand( ) % ( maxPrioridad + 1 ); break;
@@ -467,7 +469,11 @@ void aleatorios( )
                 // Llenar con 0 las demas columnas
                 default: matriz[ i ][ k ] = 0; break;
             }
+
         }
+
+        
+        randomLlegada += matriz[ i ][ 2 ];
     }
 
     // Limpiar consola
@@ -475,6 +481,8 @@ void aleatorios( )
 
     cout << "\t Tabla con valores aleatorios " << endl;
     imprimirMatriz( noProcesos );
+
+    system( "pause" );
 
     // Separador
     cout << endl;
